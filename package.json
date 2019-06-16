@@ -1,0 +1,30 @@
+{
+	"name": "jandan",
+	"version": "0.0.1",
+	"description": "煎蛋网爬虫。",
+	"main": "index.js",
+	"bin": {
+		"jandan": "./bin/index.js"
+	},
+	"scripts": {
+		"test": "echo \"Error: no test specified\" && exit 1"
+	},
+	"keywords": [
+		"jandan",
+		"spider"
+	],
+	"author": "abcuce@outlook.com",
+	"license": "GLWT",
+	"homepage": "https://github.com/forkai/jandan",
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/forkai/jandan.git"
+	},
+	"dependencies": {
+		"chalk": "^2.4.2",
+		"cheerio": "^1.0.0-rc.3",
+		"fs-extra": "^8.0.1",
+		"got": "^9.6.0",
+		"yargs": "^13.2.4"
+	}
+}
