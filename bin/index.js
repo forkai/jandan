@@ -2,26 +2,30 @@
 const { argv } = require('yargs')
 		.alias('v', 'version')
 		.alias('h', 'help')
-		.alias('d', 'download'),
-	jandan = require('../index'),
-	{ blue } = require('chalk')
+		.alias('r', 'rebang'),
+	{ blue, red } = require('chalk')
+const jandan = require('../index')
+const { log, error } = console,
+	{ exec } = require('child_process'),
+	{ existsSync, mkdirSync } = require('fs-extra')
 
 const outputHelpInfo = () => {
-	console.log(`${blue('用法:')}
+	log(`${blue('用法:')}
 	jandan <命令> [选项]
 ${blue('选项：')}
 	-v, --version   输出版本信息
 	-h, --help      输出帮助信息
-	-d, --download  下载图片
+	-r, --rebang    下载热榜板块
 ${blue('参数：')}
-	jandan -d    下载无聊图
-	jandan -d 4h 下载四小时热门
-	jandan -d t   吐槽
-	jandan -d o   随手拍
-	jandan -d z   动物园
-	jandan -d c   优评
-	jandan -d 3   三日最佳
-	jandan -d 7   七日最佳`)
+	jandan -r    下载无聊图
+	jandan -r 4 下载四小时热门
+	jandan -r t   吐槽
+	jandan -r o   随手拍
+	jandan -r z   动物园
+	jandan -r c   优评(暂不支持)
+	jandan -r 3   三日最佳
+	jandan -r 7   七日最佳
+	jandan -r a 全部下载`)
 }
 
 // 没有输入命令
@@ -35,5 +39,21 @@ const noArgv = () => {
 // 没有输入参数显示帮助信息
 noArgv() && outputHelpInfo()
 
-// 输入了txt文件路径
-argv.d && jandan(argv.d)
+// 根据不同的参数执行不同的爬虫
+const run = () => {
+	const r = ['', '4', 't', 'o', 'z', 'c', '3', '7']
+	if (argv.r === true) {
+		jandan('')
+	} else if (argv.r in r) {
+		jandan(argv.r)
+	} else if ((argv.r = 'all')) {
+		r.forEach(el => {
+			jandan(el)
+		})
+	} else {
+		error(red('参数输入错误'))
+		exit(1)
+	}
+}
+
+run()
