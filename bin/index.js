@@ -4,7 +4,7 @@ const { argv } = require('yargs')
 		.alias('h', 'help')
 		.alias('r', 'rebang'),
 	{ blue, red } = require('chalk')
-const jandan = require('../index')
+const jandan = require('../src/index')
 const { log, error } = console,
 	{ exec } = require('child_process'),
 	{ existsSync, mkdirSync } = require('fs-extra')
