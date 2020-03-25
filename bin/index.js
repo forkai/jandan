@@ -1,22 +1,25 @@
 #!/usr/bin/env node
-const { argv } = require('yargs')
-		.alias('v', 'version')
-		.alias('h', 'help')
-		.alias('r', 'rebang'),
-	{ blue, red } = require('chalk')
+
+// const { argv } = require('yargs')
+// 	.alias('v', 'version')
+// 	.alias('h', 'help')
+// 	.alias('r', 'rebang')
+const yargs = require('yargs')
+const chalk = require('chalk')
 const jandan = require('../src/index')
-const { log, error } = console,
-	{ exec } = require('child_process'),
-	{ existsSync, mkdirSync } = require('fs-extra')
+const { exit } =require('process')
+const {argv} = yargs.alias('v', 'version')
+.alias('h', 'help')
+.alias('r', 'rebang')
 
 const outputHelpInfo = () => {
-	log(`${blue('用法:')}
+	console.log(`${chalk.blue('用法:')}
 	jandan <命令> [选项]
-${blue('选项：')}
+${chalk.blue('选项：')}
 	-v, --version   输出版本信息
 	-h, --help      输出帮助信息
 	-r, --rebang    下载热榜板块
-${blue('参数：')}
+${chalk.blue('参数：')}
 	jandan -r    下载无聊图
 	jandan -r 4 下载四小时热门
 	jandan -r t   吐槽
@@ -51,7 +54,7 @@ const run = () => {
 			jandan(el)
 		})
 	} else {
-		error(red('参数输入错误'))
+		console.error(chalk.red('参数输入错误'))
 		exit(1)
 	}
 }

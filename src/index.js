@@ -1,14 +1,16 @@
 // 内置库
-const { extname } = require('path'),
-	{ log, error, time, timeEnd } = console,
-	{ exit } = process
+const { extname } = require('path')
+const { exit } = require('process')
 // 外部库
-const got = require('got'),
-	{ load } = require('cheerio'),
-	{ blue, red } = require('chalk'),
-	{ createWriteStream, existsSync, mkdirSync } = require('fs-extra')
+const got = require('got')
+const cheerio = require('cheerio')
+const chalk = require('chalk')
+const fs = require('fs-extra')
 // 导入配置文件
-const { URL, tabs } = require('../config/index.json')
+const { URL, tabs } = require('../config/index')
+const { getRandomEle } = require('./utils')
+const headers = require('../config/headers')
+const header = getRandomEle(headers)
 
 const jandan = async val => {
 	try {
@@ -18,23 +20,29 @@ const jandan = async val => {
 		if (val == '' || !val) {
 			val = ''
 		} else if (!tabs[val]) {
-			error(red('请输入正确的参数'))
+			console.error(chalk.red('请输入正确的参数'))
 			exit(1)
 		} else {
 			url = tabs[val].u
 		}
-		const { body } = await got(URL + tabs[''].u + url)
-		const $ = load(body)
+		const { body } = await got(URL + tabs[''].u + url, {
+			headers: {
+				'User-Agent': header,
+			},
+		})
+		const $ = cheerio.load(body)
 		// 生成图片链接的数组
 		const imgs = $('.text img')
 			.map((i, el) => 'http:' + $(el).attr('src'))
 			.get()
-		log(`开始下载${blue(name)},一共${blue(imgs.length)}张`)
+		console.log(
+			`开始下载${chalk.blue(name)},一共${chalk.blue(imgs.length)}张`
+		)
 		// 创建文件夹
-		existsSync('煎蛋网') || mkdirSync('煎蛋网')
-		existsSync(`./煎蛋网/${name}/`) || mkdirSync(`./煎蛋网/${name}`)
+		fs.existsSync('煎蛋网') || fs.mkdirSync('煎蛋网')
+		fs.existsSync(`./煎蛋网/${name}/`) || fs.mkdirSync(`./煎蛋网/${name}`)
 		// 下载图片
-		time('下载耗时')
+		console.time('下载耗时')
 		let imgList = [],
 			gifList = []
 		imgs.forEach((el, i) => {
@@ -47,22 +55,24 @@ const jandan = async val => {
 		})
 		// gif图片单独放在gif文件夹中
 		if (gifList.length) {
-			existsSync(`./煎蛋网/${name}/gif`) ||
-				mkdirSync(`./煎蛋网/${name}/gif`)
+			fs.existsSync(`./煎蛋网/${name}/gif`) ||
+				fs.mkdirSync(`./煎蛋网/${name}/gif`)
 			gifList.forEach((el, i) => {
 				got.stream(el).pipe(
-					createWriteStream(`./煎蛋网/${name}/gif/` + i + extname(el))
+					fs.createWriteStream(
+						`./煎蛋网/${name}/gif/` + i + extname(el)
+					)
 				)
 			})
 		}
 		imgList.forEach((el, i) => {
 			got.stream(el).pipe(
-				createWriteStream(`./煎蛋网/${name}/` + i + extname(el))
+				fs.createWriteStream(`./煎蛋网/${name}/` + i + extname(el))
 			)
 		})
-		timeEnd('下载耗时')
+		console.timeEnd('下载耗时')
 	} catch (err) {
-		error(red(err))
+		console.error(chalk.red(err))
 		exit(1)
 	}
 }
